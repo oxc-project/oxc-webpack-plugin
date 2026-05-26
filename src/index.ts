@@ -217,10 +217,22 @@ export class OxcMinifyPlugin {
           // Detect ecma target from webpack output environment
           const ecmaTarget = getEcmaTarget(compiler.options.output?.environment as Record<string, boolean | undefined> | undefined);
 
+          // Configure legal comments handling
+          const commentsFile = `${name}.LICENSE.txt`;
+          const codegenOptions = typeof this.options.minifyOptions.codegen === "object"
+            ? { ...this.options.minifyOptions.codegen }
+            : {};
+          if (this.options.extractComments) {
+            codegenOptions.legalComments = { linked: commentsFile };
+          } else {
+            codegenOptions.legalComments = "none";
+          }
+
           const minifyOptions: MinifyOptions = {
             ...this.options.minifyOptions,
             module: isModule,
             sourcemap: sourcemap,
+            codegen: codegenOptions,
             compress:
               this.options.minifyOptions.compress !== false
                 ? {
@@ -264,20 +276,9 @@ export class OxcMinifyPlugin {
 
           // Handle extracted comments
           let extractedCommentsSource: webpackSources.Source | undefined;
-          if (this.options.extractComments) {
-            const { code, comments } = extractLicenseComments(outputCode);
-            if (comments.length > 0) {
-              outputCode = code;
-              const commentsFile = `${name}.LICENSE.txt`;
-              const commentsText = comments.join("\n\n");
-              extractedCommentsSource = new RawSource(
-                `${commentsText}\n`,
-              );
-
-              // Add banner pointing to license file
-              const banner = `/*! For license information please see ${commentsFile} */`;
-              outputCode = `${banner}\n${outputCode}`;
-            }
+          if (this.options.extractComments && result.legalComments.length > 0) {
+            const commentsText = result.legalComments.join("\n\n");
+            extractedCommentsSource = new RawSource(`${commentsText}\n`);
           }
 
           let outputSource: webpackSources.Source;
@@ -342,32 +343,6 @@ export class OxcMinifyPlugin {
       }
     }
   }
-}
-
-function extractLicenseComments(code: string): {
-  code: string;
-  comments: string[];
-} {
-  const comments: string[] = [];
-  const resultCode = code.replace(
-    /\/\*[*!][\s\S]*?\*\//g,
-    (match) => {
-      if (isLicenseComment(match)) {
-        comments.push(match);
-        return "";
-      }
-      return match;
-    },
-  );
-  return { code: resultCode, comments };
-}
-
-function isLicenseComment(comment: string): boolean {
-  // Match comments that contain @license, @preserve, or start with /*!
-  return (
-    /(@license|@preserve)/i.test(comment) ||
-    comment.startsWith("/*!")
-  );
 }
 
 function getEcmaTarget(
