@@ -70,9 +70,7 @@ const JS_EXTENSION_DETECT_REGEXP = /\.[cm]?js(\?.*)?$/i;
 const PLUGIN_NAME = "OxcMinifyPlugin";
 
 export class OxcMinifyPlugin {
-  private options: Required<
-    Pick<OxcMinifyPluginOptions, "test" | "extractComments">
-  > & {
+  private options: Required<Pick<OxcMinifyPluginOptions, "test" | "extractComments">> & {
     include?: Rules;
     exclude?: Rules;
     minifyOptions: MinifyOptions;
@@ -94,16 +92,14 @@ export class OxcMinifyPlugin {
   }
 
   apply(compiler: Compiler) {
-    const { SourceMapSource, RawSource } =
-      compiler.webpack.sources;
+    const { SourceMapSource, RawSource } = compiler.webpack.sources;
     const { ModuleFilenameHelpers } = compiler.webpack;
 
     compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
       compilation.hooks.processAssets.tapPromise(
         {
           name: PLUGIN_NAME,
-          stage:
-            compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE_SIZE,
+          stage: compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE_SIZE,
           additionalAssets: true,
         },
         async (assets) => {
@@ -122,9 +118,7 @@ export class OxcMinifyPlugin {
         stats.hooks.print
           .for("asset.info.minimized")
           .tap(PLUGIN_NAME, (minimized, { green, formatFlag }) =>
-            minimized && green && formatFlag
-              ? green(formatFlag("minimized"))
-              : "",
+            minimized && green && formatFlag ? green(formatFlag("minimized")) : "",
           );
       });
     });
@@ -142,26 +136,17 @@ export class OxcMinifyPlugin {
     const { devtool } = compiler.options;
     const sourcemap =
       this.options.minifyOptions.sourcemap ??
-      (devtool
-        ? (devtool as string).includes("source-map")
-        : false);
+      (devtool ? (devtool as string).includes("source-map") : false);
 
-    const matchObject = ModuleFilenameHelpers.matchObject.bind(
-      undefined,
-      {
-        test: this.options.test,
-        include: this.options.include,
-        exclude: this.options.exclude,
-      },
-    );
+    const matchObject = ModuleFilenameHelpers.matchObject.bind(undefined, {
+      test: this.options.test,
+      include: this.options.include,
+      exclude: this.options.exclude,
+    });
 
     const assetsToMinify: Array<{
       name: string;
-      info: ReturnType<Compilation["getAsset"]> extends
-        | { info: infer I }
-        | undefined
-        ? I
-        : never;
+      info: ReturnType<Compilation["getAsset"]> extends { info: infer I } | undefined ? I : never;
       source: webpackSources.Source;
     }> = [];
 
@@ -201,12 +186,9 @@ export class OxcMinifyPlugin {
             return;
           }
 
-          const { source: sourceCode, map: inputSourceMap } =
-            source.sourceAndMap();
+          const { source: sourceCode, map: inputSourceMap } = source.sourceAndMap();
           const sourceAsString =
-            typeof sourceCode === "string"
-              ? sourceCode
-              : sourceCode.toString();
+            typeof sourceCode === "string" ? sourceCode : sourceCode.toString();
 
           // Detect if this is an ES module
           const isModule =
@@ -215,13 +197,16 @@ export class OxcMinifyPlugin {
             /\.mjs(\?.*)?$/i.test(name);
 
           // Detect ecma target from webpack output environment
-          const ecmaTarget = getEcmaTarget(compiler.options.output?.environment as Record<string, boolean | undefined> | undefined);
+          const ecmaTarget = getEcmaTarget(
+            compiler.options.output?.environment as Record<string, boolean | undefined> | undefined,
+          );
 
           // Configure legal comments handling
           const commentsFile = `${name}.LICENSE.txt`;
-          const codegenOptions = typeof this.options.minifyOptions.codegen === "object"
-            ? { ...this.options.minifyOptions.codegen }
-            : {};
+          const codegenOptions =
+            typeof this.options.minifyOptions.codegen === "object"
+              ? { ...this.options.minifyOptions.codegen }
+              : {};
           if (this.options.extractComments) {
             codegenOptions.legalComments = { linked: commentsFile };
           } else {
@@ -248,8 +233,9 @@ export class OxcMinifyPlugin {
           try {
             result = await minify(name, sourceAsString, minifyOptions);
           } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
             const webpackError = new compiler.webpack.WebpackError(
-              `${PLUGIN_NAME}: Error minifying ${name}: ${error}`,
+              `${PLUGIN_NAME}: Error minifying ${name}: ${message}`,
             );
             webpackError.name = PLUGIN_NAME;
             compilation.errors.push(webpackError);
@@ -292,11 +278,7 @@ export class OxcMinifyPlugin {
               true,
             );
           } else if (result.map) {
-            outputSource = new SourceMapSource(
-              outputCode,
-              name,
-              result.map as any,
-            );
+            outputSource = new SourceMapSource(outputCode, name, result.map as any);
           } else {
             outputSource = new RawSource(outputCode);
           }
@@ -306,13 +288,7 @@ export class OxcMinifyPlugin {
             extractedCommentsSource,
           });
 
-          await this.applyResult(
-            compilation,
-            name,
-            info,
-            outputSource,
-            extractedCommentsSource,
-          );
+          await this.applyResult(compilation, name, info, outputSource, extractedCommentsSource);
         })(),
       );
     }
@@ -345,9 +321,7 @@ export class OxcMinifyPlugin {
   }
 }
 
-function getEcmaTarget(
-  environment?: Record<string, boolean | undefined>,
-): string {
+function getEcmaTarget(environment?: Record<string, boolean | undefined>): string {
   if (!environment) return "es5";
   if (environment.dynamicImport || environment.module) return "es2020";
   if (

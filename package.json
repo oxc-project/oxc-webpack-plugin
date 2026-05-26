@@ -3,18 +3,17 @@
   "version": "0.1.0",
   "description": "Webpack plugin for minification using oxc-minify",
   "license": "MIT",
-  "type": "module",
-  "exports": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "exports": "./dist/index.js",
   "scripts": {
-    "build": "tsc",
-    "prepublishOnly": "tsc"
-  },
-  "peerDependencies": {
-    "webpack": "^5.1.0"
+    "build": "vp pack",
+    "check": "vp check",
+    "prepublishOnly": "vp pack",
+    "test": "vp test"
   },
   "dependencies": {
     "oxc-minify": "^0.133.0",
@@ -22,7 +21,13 @@
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "memfs": "^4.57.2",
     "typescript": "^5.7.0",
+    "vite-plus": "latest",
     "webpack": "^5.99.0"
-  }
+  },
+  "peerDependencies": {
+    "webpack": "^5.1.0"
+  },
+  "packageManager": "pnpm@11.3.0"
 }
