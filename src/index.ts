@@ -223,8 +223,7 @@ export class OxcMinifyPlugin {
             ? { ...this.options.minifyOptions.codegen }
             : {};
           if (this.options.extractComments) {
-            codegenOptions.legalComments = "linked";
-            codegenOptions.legalCommentsPath = commentsFile;
+            codegenOptions.legalComments = { linked: commentsFile };
           } else {
             codegenOptions.legalComments = "none";
           }
