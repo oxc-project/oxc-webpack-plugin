@@ -2,7 +2,13 @@
   "name": "oxc-webpack-plugin",
   "version": "0.3.0",
   "description": "Webpack plugin for minification using oxc-minify",
+  "homepage": "https://github.com/oxc-project/oxc-webpack-plugin#readme",
+  "bugs": "https://github.com/oxc-project/oxc-webpack-plugin/issues",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oxc-project/oxc-webpack-plugin.git"
+  },
   "files": [
     "dist"
   ],
