@@ -39,4 +39,4 @@ jobs:
           cache: true
       - run: vp run build
       - run: vp test
-      - run: pnpm publish --provenance --access public
+      - run: npm publish --provenance --access public
