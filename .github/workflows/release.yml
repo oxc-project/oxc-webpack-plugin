@@ -40,6 +40,6 @@ jobs:
           registry-url: "https://registry.npmjs.org"
       - run: vp run build
       - run: vp test
-      - run: pnpm publish --provenance --access public --no-git-checks
+      - run: pnpm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
