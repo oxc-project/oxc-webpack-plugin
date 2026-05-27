@@ -1,0 +1,42 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - package.json
+
+permissions:
+  contents: read
+
+jobs:
+  check-version:
+    name: detect version bump
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.check.outputs.changed }}
+      version: ${{ steps.check.outputs.version }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - id: check
+        uses: EndBug/version-check@095362f3cd50f690c8fa0e6afeea81834bd8d320 # v3.0.0
+        with:
+          file-url: https://unpkg.com/oxc-webpack-plugin@latest/package.json
+          static-checking: localIsNew
+
+  publish:
+    name: publish to npm
+    needs: check-version
+    if: needs.check-version.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: voidzero-dev/setup-vp@40646972e9ea5e33609c1bb31ac6a27fb01b641e # v1.10.0
+        with:
+          cache: true
+      - run: vp run build
+      - run: vp test
+      - run: pnpm publish --provenance --access public
