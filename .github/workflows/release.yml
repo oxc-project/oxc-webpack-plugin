@@ -2,17 +2,45 @@ name: Release
 
 on:
   push:
-    tags:
-      - "v*"
+    branches: [main]
+    paths:
+      - package.json
 
 permissions:
   contents: read
-  id-token: write
 
 jobs:
+  check-version:
+    name: detect version bump
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.diff.outputs.changed }}
+      version: ${{ steps.diff.outputs.version }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 2
+      - id: diff
+        run: |
+          OLD=$(git show HEAD~1:package.json | jq -r .version)
+          NEW=$(jq -r .version package.json)
+          echo "old=$OLD"
+          echo "new=$NEW"
+          if [ "$OLD" != "$NEW" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "version=$NEW" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
   publish:
     name: publish to npm
+    needs: check-version
+    if: needs.check-version.outputs.changed == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - uses: voidzero-dev/setup-vp@40646972e9ea5e33609c1bb31ac6a27fb01b641e # v1.10.0
