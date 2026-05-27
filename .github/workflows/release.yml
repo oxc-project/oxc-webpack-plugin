@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: release
     permissions:
-      contents: read
+      contents: write
       id-token: write
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
@@ -41,3 +41,6 @@ jobs:
       - run: vp run build
       - run: vp test
       - run: vp pm publish --provenance --access public
+      - run: gh release create "v${{ needs.check-version.outputs.version }}" --generate-notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
