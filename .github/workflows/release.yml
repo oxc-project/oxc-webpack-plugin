@@ -29,6 +29,7 @@ jobs:
     needs: check-version
     if: needs.check-version.outputs.changed == 'true'
     runs-on: ubuntu-latest
+    environment: release
     permissions:
       contents: read
       id-token: write
@@ -39,4 +40,4 @@ jobs:
           cache: true
       - run: vp run build
       - run: vp test
-      - run: pnpm publish --provenance --access public
+      - run: vp pm publish --provenance --access public
