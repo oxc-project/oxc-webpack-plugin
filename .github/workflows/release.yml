@@ -14,24 +14,14 @@ jobs:
     name: detect version bump
     runs-on: ubuntu-latest
     outputs:
-      changed: ${{ steps.diff.outputs.changed }}
-      version: ${{ steps.diff.outputs.version }}
+      changed: ${{ steps.check.outputs.changed }}
+      version: ${{ steps.check.outputs.version }}
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - id: check
+        uses: EndBug/version-check@095362f3cd50f690c8fa0e6afeea81834bd8d320 # v3.0.0
         with:
-          fetch-depth: 2
-      - id: diff
-        run: |
-          OLD=$(git show HEAD~1:package.json | jq -r .version)
-          NEW=$(jq -r .version package.json)
-          echo "old=$OLD"
-          echo "new=$NEW"
-          if [ "$OLD" != "$NEW" ]; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-            echo "version=$NEW" >> "$GITHUB_OUTPUT"
-          else
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-          fi
+          diff-search: "true"
 
   publish:
     name: publish to npm
