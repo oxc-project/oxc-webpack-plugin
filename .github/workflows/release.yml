@@ -21,7 +21,8 @@ jobs:
       - id: check
         uses: EndBug/version-check@095362f3cd50f690c8fa0e6afeea81834bd8d320 # v3.0.0
         with:
-          diff-search: "true"
+          file-url: https://unpkg.com/oxc-webpack-plugin@latest/package.json
+          static-checking: localIsNew
 
   publish:
     name: publish to npm
