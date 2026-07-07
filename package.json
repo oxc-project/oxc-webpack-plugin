@@ -23,7 +23,7 @@
     "test": "vp test"
   },
   "dependencies": {
-    "oxc-minify": "^0.138.0",
+    "oxc-minify": "^0.139.0",
     "schema-utils": "^4.3.0"
   },
   "devDependencies": {
