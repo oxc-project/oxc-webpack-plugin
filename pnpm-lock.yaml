@@ -29,7 +29,7 @@ importers:
         version: 0.2.6(@types/node@22.19.19)(terser@5.49.0)(typescript@7.0.2)(vite@8.0.14(@types/node@22.19.19)(terser@5.49.0))
       webpack:
         specifier: ^5.99.0
-        version: 5.109.0
+        version: 5.109.0(lightningcss@1.33.0)(postcss@8.5.23)
 
 packages:
 
@@ -2836,13 +2836,16 @@ snapshots:
 
   mime-db@1.54.0: {}
 
-  minimizer-webpack-plugin@5.6.1(webpack@5.109.0):
+  minimizer-webpack-plugin@5.6.1(lightningcss@1.33.0)(postcss@8.5.23)(webpack@5.109.0(lightningcss@1.33.0)(postcss@8.5.23)):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
       jest-worker: 27.5.1
       schema-utils: 4.3.3
       terser: 5.49.0
-      webpack: 5.109.0
+      webpack: 5.109.0(lightningcss@1.33.0)(postcss@8.5.23)
+    optionalDependencies:
+      lightningcss: 1.33.0
+      postcss: 8.5.23
 
   mrmime@2.0.1: {}
 
@@ -3181,7 +3184,7 @@ snapshots:
 
   webpack-sources@3.5.1: {}
 
-  webpack@5.109.0:
+  webpack@5.109.0(lightningcss@1.33.0)(postcss@8.5.23):
     dependencies:
       '@types/estree': 1.0.9
       '@types/json-schema': 7.0.15
@@ -3197,7 +3200,7 @@ snapshots:
       events: 3.3.0
       graceful-fs: 4.2.11
       mime-db: 1.54.0
-      minimizer-webpack-plugin: 5.6.1(webpack@5.109.0)
+      minimizer-webpack-plugin: 5.6.1(lightningcss@1.33.0)(postcss@8.5.23)(webpack@5.109.0(lightningcss@1.33.0)(postcss@8.5.23))
       neo-async: 2.6.2
       schema-utils: 4.3.3
       tapable: 2.3.3
